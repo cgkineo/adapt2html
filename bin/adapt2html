@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+var adapt2html = require("../adapt2html.js");
+
+adapt2html.main();

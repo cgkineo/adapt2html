@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>adapt2html | {{title}}</title>
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+
+		.element {
+			max-width: 900px;
+			padding: 10px;
+			border: 5px solid #fff;
+			margin: 5px auto;
+		}
+
+		.element:nth-child(odd) {
+			background-color: #ececec;
+		}
+
+		.element:nth-child(even) {
+			background-color: #e5f5fa;
+		}
+
+		h2.border-title {
+			float: left;
+		    padding: 0 5px;
+		    margin: -17.5px 0;
+		    background-color: #3cf;
+		    color: #fff;
+		    font: 12px Consolas, monospace;
+			text-transform: uppercase;
+		}
+
+		h3.display-title {
+			margin: 0;
+		}
+
+		.attr {
+			margin: 10px 0 0;
+			color: #3cf;
+			font: 12px Consolas, monospace;
+			text-decoration: underline;
+			text-transform: uppercase;
+		}
+	</style>
+</head>
+<body>
+	{{{body}}}
+</body>
+</html>

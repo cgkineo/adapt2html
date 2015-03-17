@@ -1,0 +1,15 @@
+{
+	"blacklist": [
+		"_associatedLearning.*",
+		"displayTitle",
+		"large",
+		"medium",
+		"mp4",
+		"ogv",
+		"poster",
+		"small",
+		"src",
+		"transcriptLink"
+	],
+	"whitelist": []
+}

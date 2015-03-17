@@ -1,0 +1,26 @@
+{
+  "name": "adapt-to-html",
+  "version": "0.1.0",
+  "description": "Convert Adapt JSON to HTML.",
+  "main": "",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cgkineo/adapt-to-html"
+  },
+  "author": "Tom Greenfield",
+  "license": "GPL v3",
+  "bugs": {
+    "url": "https://github.com/cgkineo/adapt-to-html/issues"
+  },
+  "homepage": "https://github.com/cgkineo/adapt-to-html",
+  "dependencies": {
+    "async": "^0.9.0",
+    "mu2": "^0.5.20",
+    "node-json2html": "^1.0.0",
+    "underscore": "^1.8.2"
+  },
+  "bin": {
+    "adapt2html": "./bin/adapt2html"
+  }
+}
