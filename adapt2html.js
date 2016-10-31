@@ -13,10 +13,12 @@ var transform = { tag: "div", class: "element" };
 function main() {
 	console.log("Running adapt2html...");
 
-	fs.readdir(".", function (err, files) {
+	fs.readdir(".", function(err, files) {
 		if (err) return console.log(err.toString());
 
-		async.each(files, processFile, function() { console.log("Finished."); });
+		async.each(files, processFile, function(err) {
+			console.log(err ? err.toString() : "Finished.");
+		});
 	});
 }
 
@@ -26,11 +28,12 @@ function processFile(file, done) {
 	if (file === "exceptions.json") {
 		exceptions = require(path.join(process.cwd(), "exceptions.json"));
 		console.log("Found custom exceptions.json.");
+
 		return done();
 	}
 
-	fs.readFile(file, function (err, output) {
-		if (err) return console.log(err.toString());
+	fs.readFile(file, function(err, output) {
+		if (err) return done(err);
 
 		htmlTitle = path.basename(file, ".json");
 		htmlBody = "";
@@ -46,25 +49,12 @@ function processFile(file, done) {
 }
 
 function convertToHTML(element) {
-	var borderTitle = element._component ? "${_id} ${_component} ${_type}" : "${_id} ${_type}";
 	var displayTitle = element.displayTitle ? "${displayTitle}" : "&lt;empty&gt;";
 
 	transform.children = [
-		{
-			tag: "h2",
-			class: "border-title",
-			html: borderTitle
-		},
-		{
-			tag: "span",
-			class: "attr",
-			html: "displayTitle"
-		},
-		{
-			tag: "h3",
-			class: "display-title",
-			html: displayTitle
-		}
+		{ tag: "h2", class: "border-title", html: "${_id} ${_component} ${_type}" },
+		{ tag: "span", class: "attr", html: "displayTitle" },
+		{ tag: "h3", class: "display-title", html: displayTitle }
 	];
 
 	setUpTransform(null, element);
@@ -77,65 +67,57 @@ function setUpTransform(elementName, element) {
 	for (var i = 0, j = keys.length; i < j; i++) {
 		var key = keys[i];
 		var name = elementName ? elementName + "." + key : key;
-		var value = element[keys[i]];
+		var value = element[key];
+
+		if (shouldBeExcluded(name, key, value)) continue;
 
 		if (typeof value === "object") {
-			if (!blacklistedObject(name, key)) setUpTransform(name, value);
-			else continue;
-		} else if (isExcluded(name, key, value)) {
+			setUpTransform(name, value);
 			continue;
-		} else {
-			transform.children.push([
-				{
-					tag: "h4",
-					class: "attr",
-					html: name
-				},
-				{
-					tag: "div",
-					html: "${" + name + "}"
-				}
-			]);
 		}
+
+		transform.children.push([
+			{ tag: "h4", class: "attr", html: name },
+			{ tag: "div", html: "${" + name + "}" }
+		]);
 	}
 }
 
-function blacklistedObject(name, key) {
-	return _.find(exceptions.blacklist, function(i) {
-		var substring = i.substr(0, i.length - 2);
+function shouldBeExcluded(name, key, value) {
+	if (typeof value === "object") {
+		return _.find(exceptions.blacklist, function(i) {
+			var substring = i.substr(0, i.length - 2);
 
-		return i.slice(-2) === ".*" && (substring === name || substring === key);
-	});
-}
+			return i.slice(-2) === ".*" && (substring === name || substring === key);
+		});
+	}
 
-function isExcluded(name, key, value) {
+	var isException = function(list) {
+		return _.find(exceptions[list], function(i) { return i === name || i === key; });
+	};
 	var isEmpty = value === "";
 	var hasUnderscore = key.charAt(0) === "_";
-	var blacklisted = _.find(exceptions.blacklist, function(i) {
-		return i === name || i === key;
-	});
-	var whitelisted = _.find(exceptions.whitelist, function(i) {
-		return i === name || i === key;
-	});
 
-	return blacklisted || isEmpty || (hasUnderscore && !whitelisted);
+	return isException("blacklist") || isEmpty ||
+		(hasUnderscore && !isException("whitelist"));
 }
 
 function writeHTML(done) {
 	var template = "";
+	var dir = "adapt2html";
 	var filename = htmlTitle + ".html";
 
 	mu.compileAndRender(path.resolve(__dirname, "template.html"), {
 		title: htmlTitle,
 		body: htmlBody
 	}).on("data", function(data) {
-		template += data;		
+		template += data;
 	}).on("end", function() {
-		fs.mkdir("adapt2html", function(err) {
-			if (err && err.code !== "EEXIST") return console.log(err.toString());
+		fs.mkdir(dir, function(err) {
+			if (err && err.code !== "EEXIST") return done(err);
 
-			fs.writeFile(path.join("adapt2html", filename), template, function (err) {
-				if (err) return console.log(err.toString());
+			fs.writeFile(path.join(dir, filename), template, function(err) {
+				if (err) return done(err);
 
 				console.log("Written " + filename + ".");
 				done();
@@ -144,6 +126,4 @@ function writeHTML(done) {
 	});
 }
 
-module.exports = {
-	main: main
-};
+module.exports = { main: main };
