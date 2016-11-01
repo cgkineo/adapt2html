@@ -2,7 +2,7 @@
   "name": "adapt2html",
   "version": "0.1.1",
   "description": "Convert Adapt JSON to HTML",
-  "main": "adapt2html.js",
+  "main": "adapt2html",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cgkineo/adapt2html.git"
