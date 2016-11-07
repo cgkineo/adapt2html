@@ -10,15 +10,11 @@ var htmlTitle;
 var htmlBody;
 var transform = { tag: "div", class: "element" };
 
-function main() {
+function main(cwd, callback) {
 	console.log("Running adapt2html...");
 
-	fs.readdir(".", function(err, files) {
-		if (err) return console.log(err.toString());
-
-		async.each(files, processFile, function(err) {
-			console.log(err ? err.toString() : "Finished.");
-		});
+	fs.readdir(cwd, function(err, files) {
+		err ? callback(err) : async.each(files, processFile, callback);
 	});
 }
 

@@ -9,7 +9,10 @@
 		"poster",
 		"small",
 		"src",
-		"transcriptLink"
+		"transcriptLink",
+		"source",
+		"type",
+		"_playerOptions.*"
 	],
 	"whitelist": []
 }
