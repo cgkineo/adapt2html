@@ -13,6 +13,8 @@ var transform = { tag: "div", class: "element" };
 function main(cwd, callback) {
 	console.log("Running adapt2html...");
 
+	if (cwd !== ".") process.chdir(cwd);
+
 	fs.readdir(cwd, function(err, files) {
 		err ? callback(err) : async.each(files, processFile, callback);
 	});
